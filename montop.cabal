@@ -1,4 +1,5 @@
-cabal-version:      3.0
+cabal-version:   3.0
+
 -- The cabal-version field refers to the version of the .cabal specification,
 -- and can be different from the cabal-install (the tool) version and the
 -- Cabal (the library) version you are using. As such, the Cabal (the library)
@@ -11,7 +12,7 @@ cabal-version:      3.0
 --   http://haskell.org/cabal/users-guide/
 --
 -- The name of the package.
-name:               montop
+name:            montop
 
 -- The package version.
 -- See the Haskell package versioning policy (PVP) for standards
@@ -20,7 +21,7 @@ name:               montop
 -- PVP summary:     +-+------- breaking API changes
 --                  | | +----- non-breaking API additions
 --                  | | | +--- code changes with no API change
-version:            0.1.0.0
+version:         0.1.0.0
 
 -- A short (one-line) description of the package.
 -- synopsis:
@@ -29,49 +30,116 @@ version:            0.1.0.0
 -- description:
 
 -- The license under which the package is released.
-license:            GPL-3.0-or-later
+license:         GPL-3.0-or-later
 
 -- The file containing the license text.
-license-file:       LICENSE
+license-file:    LICENSE
 
 -- The package author(s).
-author:             Ole Birketvedt
+author:          Ole Birketvedt
 
 -- An email address to which users can send suggestions, bug reports, and patches.
-maintainer:         fossbab@gmail.com
+maintainer:      fossbab@gmail.com
 
 -- A copyright notice.
 -- copyright:
-category:           System
-build-type:         Simple
+category:        System
+build-type:      Simple
 
 -- Extra doc files to be distributed with the package, such as a CHANGELOG or a README.
-extra-doc-files:    CHANGELOG.md
+extra-doc-files: CHANGELOG.md
 
 -- Extra source files to be distributed with the package, such as examples, or a tutorial module.
 -- extra-source-files:
 
 common warnings
-    ghc-options: -Wall
+  ghc-options: -Wall
 
+library montop-lib
+  import:           warnings
+
+  -- Modules exported by the library
+  exposed-modules:
+    Events
+    ProcFS
+    Types
+    UI
+    Zipper
+
+  -- Other modules needed internally by the library (if any)
+  -- other-modules:
+
+  -- Packages the library depends on
+  build-depends:
+    , attoparsec    ^>=0.14.4
+    , base          >=4.18       && <4.19
+    , brick         ^>=2.8.3
+    , bytestring    ^>=0.11.5.4
+    , containers    ^>=0.6.7
+    , data-default  ^>=0.8.0.1
+    , directory     ^>=1.3.8.5
+    , filepath      ^>=1.4.301.0
+    , lens          ^>=5.3.4
+    , microlens     ^>=0.4.14.0
+    , microlens-th  ^>=0.4.3.17
+    , stm           ^>=2.5.1.0
+    , text          ^>=2.0.2
+    , time          ^>=1.12.2
+    , transformers  ^>=0.6.1.0
+    , unix          ^>=2.8.6.0
+    , vector        ^>=0.13.2.0
+    , vty           ^>=6.4
+
+  -- Source directory for library modules
+  hs-source-dirs:   src
+
+  -- Default language
+  default-language: Haskell2010
+
+-- Executable Section
 executable montop
-    -- Import common warning flags.
-    import:           warnings
+  import:           warnings
+  main-is:          Main.hs
 
-    -- .hs or .lhs file containing the Main module.
-    main-is:          Main.hs
+  -- Modules only used by the executable
+  -- other-modules:
 
-    -- Modules included in this executable, other than Main.
-    -- other-modules:
+  build-depends:
+    , base          >=4.18      && <4.19
+    , brick         ^>=2.8.3
+    , containers    ^>=0.6.7
+    , microlens     ^>=0.4.14.0
+    , montop-lib
+    , stm           ^>=2.5.1.0
+    , text          ^>=2.0.2
+    , transformers  ^>=0.6.1.0
+    , vty           ^>=6.4
+    , vty-unix      ^>=0.2.0.0
 
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
+  hs-source-dirs:   app
+  default-language: Haskell2010
+  ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
 
-    -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.17.2.1
+-- Test Suite Section
+test-suite montop-test
+  import:           warnings
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
+  other-modules:
+    ProcFSTests
+    SortTests
+    ZipperTests
 
-    -- Directories containing source files.
-    hs-source-dirs:   app
+  build-depends:
+    , attoparsec  ^>=0.14.4
+    , base        >=4.18      && <4.19
+    , bytestring  ^>=0.11.5.4
+    , containers  ^>=0.6.7
+    , hspec       ^>=2.11.12
+    , montop-lib
+    , QuickCheck  ^>=2.15.0.1
+    , text        ^>=2.0.2
 
-    -- Base language which the package is written in.
-    default-language: Haskell2010
+  default-language: Haskell2010
